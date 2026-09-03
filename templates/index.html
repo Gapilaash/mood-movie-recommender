@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mood Movie Recommender</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #1a1a2e;
+        color: white;
+    }
+    h2 { text-align: center; }
+    input, select {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0;
+        border-radius: 8px;
+        border: none;
+        box-sizing: border-box;
+        font-size: 15px;
+    }
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #e94560;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 8px;
+    }
+    button:hover { background: #ff2e63; }
+    .movie-card {
+        background: #16213e;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+    }
+    .movie-title { font-size: 18px; font-weight: bold; color: #ffd369; }
+    .movie-genre { color: #aaa; font-size: 14px; margin: 4px 0; }
+    #loading { text-align: center; display: none; }
+    #error { color: #ff6b6b; text-align: center; display: none; }
+</style>
+</head>
+<body>
+    <h2>Mood Movie Recommender</h2>
+
+    <input type="text" id="mood-input" placeholder="How are you feeling today?">
+
+    <select id="language-select">
+        <option value="Any">Any Language</option>
+        <option value="Tamil">Tamil</option>
+        <option value="English">English</option>
+        <option value="Hindi">Hindi</option>
+        <option value="Telugu">Telugu</option>
+        <option value="Malayalam">Malayalam</option>
+    </select>
+
+    <button onclick="getRecommendations()">Get Movies</button>
+
+    <p id="loading">Thinking...</p>
+    <p id="error"></p>
+    <div id="results"></div>
+
+    <script>
+        async function getRecommendations() {
+            const mood = document.getElementById("mood-input").value.trim();
+            const language = document.getElementById("language-select").value;
+            const errorEl = document.getElementById("error");
+            const resultsEl = document.getElementById("results");
+            const loadingEl = document.getElementById("loading");
+
+            errorEl.style.display = "none";
+            resultsEl.innerHTML = "";
+
+            if (!mood) {
+                errorEl.textContent = "Please type how you're feeling first.";
+                errorEl.style.display = "block";
+                return;
+            }
+
+            loadingEl.style.display = "block";
+
+            try {
+                const response = await fetch("/recommend", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ mood: mood, language: language })
+                });
+
+                const data = await response.json();
+                loadingEl.style.display = "none";
+
+                if (data.error) {
+                    errorEl.textContent = data.error;
+                    errorEl.style.display = "block";
+                    return;
+                }
+
+                const movies = JSON.parse(data.result);
+                let html = "";
+                movies.forEach(m => {
+                    html += `
+                        <div class="movie-card">
+                            <div class="movie-title">${m.title}</div>
+                            <div class="movie-genre">${m.genre}</div>
+                            <p>${m.reason}</p>
+                        </div>
+                    `;
+                });
+                resultsEl.innerHTML = html;
+            } catch (e) {
+                loadingEl.style.display = "none";
+                errorEl.textContent = "Something went wrong. Please try again.";
+                errorEl.style.display = "block";
+            }
+        }
+
+        document.getElementById("mood-input").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") getRecommendations();
+        });
+    </script>
+</body>
+</html>
