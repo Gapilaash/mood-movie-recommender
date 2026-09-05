@@ -20,6 +20,8 @@ def recommend():
     data = request.get_json(force=True)
     mood = data.get("mood", "").strip()
     language = data.get("language", "Any").strip()
+    count = int(data.get("count", 5))
+    count = max(1, min(count, 10))
 
     if not mood:
         return jsonify({"error": "Please enter your mood."}), 400
@@ -29,15 +31,16 @@ def recommend():
     prompt = f"""
     User's current mood/feeling: "{mood}"
 
-    Suggest 5 movies {lang_instruction} that match this mood perfectly.
+    Suggest {count} movies {lang_instruction} that match this mood perfectly.
     For each movie give:
     - title
     - genre
     - reason (one line on why it fits the mood)
+    - year (release year as integer)
 
     Respond ONLY with a valid JSON array, no extra text, no markdown fences:
     [
-      {{"title": "...", "genre": "...", "reason": "..."}}
+      {{"title": "...", "genre": "...", "reason": "...", "year": 2020}}
     ]
     """
 

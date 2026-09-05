@@ -2,127 +2,481 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f2e9d8">
 <title>Mood Movie Recommender</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        max-width: 600px;
-        margin: 50px auto;
-        padding: 20px;
-        background: #1a1a2e;
-        color: white;
-    }
-    h2 { text-align: center; }
-    input, select {
-        width: 100%;
-        padding: 12px;
-        margin: 8px 0;
-        border-radius: 8px;
-        border: none;
-        box-sizing: border-box;
-        font-size: 15px;
-    }
-    button {
-        width: 100%;
-        padding: 12px;
-        background: #e94560;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 16px;
-        margin-top: 8px;
-    }
-    button:hover { background: #ff2e63; }
-    .movie-card {
-        background: #16213e;
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 8px;
-    }
-    .movie-title { font-size: 18px; font-weight: bold; color: #ffd369; }
-    .movie-genre { color: #aaa; font-size: 14px; margin: 4px 0; }
-    #loading { text-align: center; display: none; }
-    #error { color: #ff6b6b; text-align: center; display: none; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f2e9d8;
+    --paper: #fbf5e8;
+    --paper2: #ece0c5;
+    --ink: #2c2116;
+    --muted: #8a7a63;
+    --maroon: #7a1f2b;
+    --maroon-soft: rgba(122, 31, 43, 0.1);
+    --gold: #b9822f;
+    --border: rgba(44, 33, 22, 0.22);
+    --radius: 3px;
+    --font-display: 'Bebas Neue', Impact, sans-serif;
+    --font-body: 'Work Sans', system-ui, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    background-image:
+      radial-gradient(rgba(44,33,22,0.035) 1px, transparent 1px);
+    background-size: 3px 3px;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 40px 24px 0;
+    text-align: center;
+  }
+  .marquee-badge {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    letter-spacing: 0.22em;
+    color: var(--paper);
+    background: var(--maroon);
+    padding: 5px 16px 3px;
+  }
+  header h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.6rem, 9vw, 4.2rem);
+    letter-spacing: 0.01em; line-height: 0.95;
+    margin-top: 14px;
+    color: var(--ink);
+  }
+  header h1 span { color: var(--maroon); }
+  .subtitle {
+    font-size: 0.96rem; color: var(--muted); margin-top: 12px;
+    font-weight: 400; max-width: 380px; margin-left: auto; margin-right: auto;
+  }
+  .film-rule {
+    display: flex; justify-content: center; gap: 5px; margin: 20px auto 0;
+  }
+  .film-rule span { width: 6px; height: 6px; background: var(--ink); border-radius: 1px; opacity: 0.25; }
+
+  .mood-chips {
+    display: flex; flex-wrap: wrap; gap: 9px;
+    justify-content: center; padding: 26px 20px 0;
+  }
+  .chip {
+    padding: 7px 16px; border-radius: 999px;
+    border: 1.5px solid var(--ink); background: var(--paper);
+    color: var(--ink); font-size: 0.82rem; cursor: pointer;
+    transition: all 0.15s; font-family: var(--font-body); font-weight: 500;
+    user-select: none;
+  }
+  .chip:hover { background: var(--ink); color: var(--paper); }
+  .chip.active { border-color: var(--maroon); background: var(--maroon); color: var(--paper); }
+
+  main { flex: 1; width: 100%; max-width: 620px; margin: 0 auto; padding: 24px 16px 48px; }
+
+  .ticket {
+    position: relative;
+    background: var(--paper);
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    padding: 30px 28px;
+    margin-top: 18px;
+  }
+  .ticket::before, .ticket::after {
+    content: ''; position: absolute; width: 22px; height: 22px;
+    background: var(--bg); border: 1.5px solid var(--ink); border-radius: 50%;
+    top: 50%; transform: translateY(-50%);
+  }
+  .ticket::before { left: -12px; }
+  .ticket::after { right: -12px; }
+
+  label {
+    display: block; font-family: var(--font-display); font-size: 0.95rem;
+    letter-spacing: 0.06em; color: var(--muted); margin-bottom: 7px;
+  }
+
+  input[type="text"] {
+    width: 100%; padding: 13px 15px; border-radius: 2px;
+    border: 1.5px solid var(--border); background: var(--bg);
+    color: var(--ink); font-size: 1rem; font-family: var(--font-body);
+    outline: none; transition: border-color 0.2s; -webkit-appearance: none;
+  }
+  input[type="text"]::placeholder { color: var(--muted); }
+  input[type="text"]:focus { border-color: var(--maroon); }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+
+  select {
+    width: 100%; padding: 13px 15px; border-radius: 2px;
+    border: 1.5px solid var(--border); background: var(--bg);
+    color: var(--ink); font-size: 0.95rem; font-family: var(--font-body);
+    outline: none; cursor: pointer; -webkit-appearance: none; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%232c2116' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+  }
+  select:focus { border-color: var(--maroon); }
+  select option { background: #fbf5e8; }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+    width: 100%; padding: 15px;
+    background: var(--maroon);
+    color: var(--paper); border: none; border-radius: 2px; cursor: pointer;
+    font-family: var(--font-display); font-size: 1.15rem; letter-spacing: 0.04em;
+    margin-top: 22px; transition: background 0.2s, transform 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover { background: #611722; }
+  .btn:active { transform: scale(0.99); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .loading { display: none; text-align: center; padding: 44px 20px; color: var(--muted); }
+  .spinner {
+    width: 30px; height: 30px; border: 2px solid var(--border);
+    border-top-color: var(--maroon); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-box {
+    display: none; background: rgba(122,31,43,.08);
+    border: 1.5px solid var(--maroon); border-radius: 2px;
+    padding: 12px 16px; color: var(--maroon); font-size: 0.88rem; margin-top: 14px;
+  }
+
+  #results { margin-top: 28px; }
+  .results-header {
+    font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 0.03em;
+    color: var(--ink);
+    margin-bottom: 14px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .clear-btn {
+    background: none; border: none; color: var(--muted);
+    font-size: 0.8rem; cursor: pointer; font-family: var(--font-body); padding: 0;
+    text-decoration: underline; text-underline-offset: 2px;
+  }
+  .clear-btn:hover { color: var(--maroon); }
+
+  .movie-card {
+    position: relative;
+    background: var(--paper); border: 1.5px solid var(--ink);
+    border-radius: var(--radius); margin-bottom: 14px;
+    display: flex; align-items: stretch;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: fadeUp 0.35s ease both;
+  }
+  .movie-card:hover {
+    transform: translateY(-3px) rotate(-0.3deg);
+    box-shadow: 4px 6px 0 var(--maroon-soft);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .movie-num {
+    font-family: var(--font-display); font-size: 1.9rem;
+    color: var(--paper); background: var(--maroon);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; width: 54px;
+    border-right: 2px dashed rgba(251,245,232,0.4);
+    writing-mode: vertical-rl;
+    padding: 10px 0;
+  }
+  .movie-body { flex: 1; min-width: 0; padding: 16px 18px; }
+  .movie-title { font-family: var(--font-display); font-size: 1.35rem; letter-spacing: 0.01em; color: var(--ink); line-height: 1.15; }
+  .movie-meta { display: flex; align-items: center; gap: 10px; margin-top: 7px; flex-wrap: wrap; }
+  .genre-tag {
+    font-size: 0.72rem; font-weight: 600; padding: 3px 10px;
+    border-radius: 999px; border: 1px solid var(--ink);
+    color: var(--ink); text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .year-tag { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+  .movie-reason { font-size: 0.9rem; color: var(--muted); margin-top: 9px; line-height: 1.55; }
+
+  .card-actions { display: flex; gap: 10px; margin-top: 22px; }
+  .ghost-btn {
+    flex: 1; padding: 11px; border: 1.5px solid var(--ink);
+    background: var(--paper); color: var(--ink); border-radius: 2px;
+    font-size: 0.84rem; font-family: var(--font-body); font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: all 0.18s;
+  }
+  .ghost-btn:hover { background: var(--ink); color: var(--paper); }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink); border: none;
+    border-radius: 2px; padding: 10px 20px; font-size: 0.85rem;
+    color: var(--paper); transition: transform 0.3s ease;
+    z-index: 9999; white-space: nowrap; pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .history-section { margin-top: 22px; padding-top: 18px; border-top: 2px dashed var(--border); }
+  .history-title {
+    font-family: var(--font-display); font-size: 0.95rem; letter-spacing: 0.05em;
+    color: var(--muted); margin-bottom: 10px;
+  }
+  .history-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .history-chip {
+    padding: 5px 12px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--bg);
+    color: var(--muted); font-size: 0.8rem; cursor: pointer; transition: all 0.18s;
+  }
+  .history-chip:hover { color: var(--ink); border-color: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation-duration: 2s; }
+    .movie-card { animation: none; }
+  }
+  @media (max-width: 480px) {
+    header { padding: 30px 16px 0; }
+    .ticket { padding: 24px 18px; }
+    .row { grid-template-columns: 1fr; gap: 10px; }
+    .card-actions { flex-direction: column; }
+    .movie-num { width: 40px; font-size: 1.5rem; }
+    .movie-body { padding: 14px 15px; }
+  }
 </style>
 </head>
 <body>
-    <h2>Mood Movie Recommender</h2>
 
-    <input type="text" id="mood-input" placeholder="How are you feeling today?">
+<header>
+  <span class="marquee-badge">Now Screening</span>
+  <h1>Mood Movie<br><span>Recommender</span></h1>
+  <p class="subtitle">Tell us how you feel, and we'll find a film to match it.</p>
+  <div class="film-rule"><span></span><span></span><span></span><span></span><span></span></div>
+</header>
 
-    <select id="language-select">
-        <option value="Any">Any Language</option>
-        <option value="Tamil">Tamil</option>
-        <option value="English">English</option>
-        <option value="Hindi">Hindi</option>
-        <option value="Telugu">Telugu</option>
-        <option value="Malayalam">Malayalam</option>
-    </select>
+<div class="mood-chips">
+  <button class="chip" onclick="fillMood('happy & upbeat')">Happy</button>
+  <button class="chip" onclick="fillMood('sad and melancholic')">Sad</button>
+  <button class="chip" onclick="fillMood('thrilled and excited')">Thrilled</button>
+  <button class="chip" onclick="fillMood('romantic and hopeful')">Romantic</button>
+  <button class="chip" onclick="fillMood('anxious and stressed')">Anxious</button>
+  <button class="chip" onclick="fillMood('bored, need adventure')">Bored</button>
+  <button class="chip" onclick="fillMood('nostalgic')">Nostalgic</button>
+  <button class="chip" onclick="fillMood('cozy and relaxed')">Cozy</button>
+</div>
 
-    <button onclick="getRecommendations()">Get Movies</button>
+<main>
+  <div class="ticket">
+    <label for="mood-input">Your mood</label>
+    <input type="text" id="mood-input" placeholder="e.g. happy and hopeful, or tired after a long week…" autocomplete="off">
 
-    <p id="loading">Thinking...</p>
-    <p id="error"></p>
-    <div id="results"></div>
+    <div class="row">
+      <div>
+        <label for="language-select">Language</label>
+        <select id="language-select">
+          <option value="Any">Any language</option>
+          <option value="English">English</option>
+          <option value="Hindi">Hindi</option>
+          <option value="Tamil">Tamil</option>
+          <option value="Telugu">Telugu</option>
+          <option value="Malayalam">Malayalam</option>
+          <option value="Spanish">Spanish</option>
+          <option value="French">French</option>
+          <option value="Korean">Korean</option>
+          <option value="Japanese">Japanese</option>
+        </select>
+      </div>
+      <div>
+        <label for="count-select">Number of picks</label>
+        <select id="count-select">
+          <option value="3">3 movies</option>
+          <option value="5" selected>5 movies</option>
+          <option value="8">8 movies</option>
+        </select>
+      </div>
+    </div>
 
-    <script>
-        async function getRecommendations() {
-            const mood = document.getElementById("mood-input").value.trim();
-            const language = document.getElementById("language-select").value;
-            const errorEl = document.getElementById("error");
-            const resultsEl = document.getElementById("results");
-            const loadingEl = document.getElementById("loading");
+    <button class="btn" id="submit-btn" onclick="getRecommendations()">
+      Find Movies For My Mood
+    </button>
+    <div class="error-box" id="error"></div>
+  </div>
 
-            errorEl.style.display = "none";
-            resultsEl.innerHTML = "";
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p id="loading-text">Matching your mood to films…</p>
+  </div>
 
-            if (!mood) {
-                errorEl.textContent = "Please type how you're feeling first.";
-                errorEl.style.display = "block";
-                return;
-            }
+  <div id="results"></div>
 
-            loadingEl.style.display = "block";
+  <div class="history-section" id="history-section" style="display:none">
+    <div class="history-title">Recent Searches</div>
+    <div class="history-list" id="history-list"></div>
+  </div>
+</main>
 
-            try {
-                const response = await fetch("/recommend", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ mood: mood, language: language })
-                });
+<div class="toast" id="toast"></div>
 
-                const data = await response.json();
-                loadingEl.style.display = "none";
+<script>
+  const LOADING_MSGS = [
+    'Matching your mood to films…',
+    'Consulting the cinema archive…',
+    'Scanning through the reels…',
+    'Almost ready with your picks…',
+  ];
 
-                if (data.error) {
-                    errorEl.textContent = data.error;
-                    errorEl.style.display = "block";
-                    return;
-                }
+  let historyArr = JSON.parse(localStorage.getItem('mmr_history') || '[]');
+  let currentMovies = [];
 
-                const movies = JSON.parse(data.result);
-                let html = "";
-                movies.forEach(m => {
-                    html += `
-                        <div class="movie-card">
-                            <div class="movie-title">${m.title}</div>
-                            <div class="movie-genre">${m.genre}</div>
-                            <p>${m.reason}</p>
-                        </div>
-                    `;
-                });
-                resultsEl.innerHTML = html;
-            } catch (e) {
-                loadingEl.style.display = "none";
-                errorEl.textContent = "Something went wrong. Please try again.";
-                errorEl.style.display = "block";
-            }
-        }
+  renderHistory();
 
-        document.getElementById("mood-input").addEventListener("keypress", function(e) {
-            if (e.key === "Enter") getRecommendations();
-        });
-    </script>
+  function fillMood(text) {
+    document.getElementById('mood-input').value = text;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('mood-input').focus();
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  function renderHistory() {
+    if (!historyArr.length) return;
+    document.getElementById('history-section').style.display = 'block';
+    document.getElementById('history-list').innerHTML = historyArr.slice(0, 8).map(h =>
+      `<button class="history-chip" onclick="fillFromHistory('${h.replace(/'/g,"\\'")}')">${h}</button>`
+    ).join('');
+  }
+
+  function fillFromHistory(mood) { document.getElementById('mood-input').value = mood; }
+
+  function addToHistory(mood) {
+    historyArr = [mood, ...historyArr.filter(h => h !== mood)].slice(0, 8);
+    localStorage.setItem('mmr_history', JSON.stringify(historyArr));
+    renderHistory();
+  }
+
+  function cycleLoading() {
+    let i = 0;
+    return setInterval(() => {
+      i = (i + 1) % LOADING_MSGS.length;
+      document.getElementById('loading-text').textContent = LOADING_MSGS[i];
+    }, 1800);
+  }
+
+  async function getRecommendations() {
+    const mood = document.getElementById('mood-input').value.trim();
+    const language = document.getElementById('language-select').value;
+    const count = document.getElementById('count-select').value;
+    const errorEl = document.getElementById('error');
+    const resultsEl = document.getElementById('results');
+    const loadingEl = document.getElementById('loading');
+    const btn = document.getElementById('submit-btn');
+
+    errorEl.style.display = 'none';
+    resultsEl.innerHTML = '';
+
+    if (!mood) {
+      errorEl.textContent = "Type how you're feeling, or pick a mood above.";
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    loadingEl.style.display = 'block';
+    const timer = cycleLoading();
+
+    try {
+      const res = await fetch('/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mood, language, count: parseInt(count) })
+      });
+      const data = await res.json();
+      clearInterval(timer);
+      loadingEl.style.display = 'none';
+      btn.disabled = false;
+
+      if (data.error) { errorEl.textContent = data.error; errorEl.style.display = 'block'; return; }
+
+      const movies = JSON.parse(data.result);
+      currentMovies = movies;
+      addToHistory(mood);
+
+      let html = `<div class="results-header"><span>${movies.length} Picks For "${mood}"</span><button class="clear-btn" onclick="clearResults()">Clear</button></div>`;
+      movies.forEach((m, i) => {
+        html += `
+          <div class="movie-card" style="animation-delay:${i * 0.06}s">
+            <div class="movie-num">${i + 1}</div>
+            <div class="movie-body">
+              <div class="movie-title">${m.title}</div>
+              <div class="movie-meta">
+                <span class="genre-tag">${m.genre}</span>
+                ${m.year ? `<span class="year-tag">${m.year}</span>` : ''}
+              </div>
+              <div class="movie-reason">${m.reason}</div>
+            </div>
+          </div>`;
+      });
+
+      html += `
+        <div class="card-actions">
+          <button class="ghost-btn" onclick="copyList()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy List
+          </button>
+          <button class="ghost-btn" onclick="shareList()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+            Share
+          </button>
+        </div>`;
+
+      resultsEl.innerHTML = html;
+      resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      clearInterval(timer);
+      loadingEl.style.display = 'none';
+      btn.disabled = false;
+      errorEl.textContent = 'Something went wrong. Please try again.';
+      errorEl.style.display = 'block';
+    }
+  }
+
+  function clearResults() { document.getElementById('results').innerHTML = ''; currentMovies = []; }
+
+  function copyList() {
+    if (!currentMovies.length) return;
+    const text = currentMovies.map((m, i) => `${i+1}. ${m.title} (${m.genre})\n   ${m.reason}`).join('\n\n');
+    navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+  }
+
+  function shareList() {
+    const mood = document.getElementById('mood-input').value.trim();
+    if (!currentMovies.length) return;
+    const text = `Movies for when you're feeling "${mood}":\n\n` + currentMovies.map((m,i) => `${i+1}. ${m.title}`).join('\n');
+    if (navigator.share) navigator.share({ title: 'My movie picks', text }).catch(() => {});
+    else navigator.clipboard.writeText(text).then(() => showToast('Copied — paste to share!'));
+  }
+
+  document.getElementById('mood-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') getRecommendations();
+  });
+  document.getElementById('mood-input').addEventListener('input', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  });
+</script>
 </body>
 </html>
