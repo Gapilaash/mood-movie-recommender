@@ -41,6 +41,7 @@ python app.py
 http://127.0.0.1:5000
 ```
 
+
 ## Project Structure
 
 - `app.py` — Flask backend responsible for handling Gemini AI API calls
@@ -50,4 +51,7 @@ http://127.0.0.1:5000
 
 ## Free Deployment Options
 
-You can deploy this application at no cost using [Render.com](https://render.com) or [PythonAnywhere](https://www.pythonanywhere.com), both of which offer free hosting tiers.
+You can deploy this application at no cost using [Vercel](https://vercel.com) or [PythonAnywhere](https://www.pythonanywhere.com), both of which offer free hosting tiers.
+
+## Live Demo
+🔗 [https://mood-movie-recommender-qdj2.vercel.app](https://mood-movie-recommender-qdj2.vercel.app)
