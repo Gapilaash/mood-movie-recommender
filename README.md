@@ -18,12 +18,25 @@ pip install -r requirements.txt
 GEMINI_API_KEY=your_actual_key_here
 ```
 
-3. Start the application:
+3. (Optional, but needed for posters/cast/IMDb rating) Get a free OMDb API key:
+   - Go to [omdbapi.com/apikey.aspx](http://www.omdbapi.com/apikey.aspx)
+   - Select the **FREE** tier (1,000 requests/day, no cost, no card needed)
+   - Enter your email — the key is emailed to you instantly
+   - Click the activation link in that email (the key won't work until you do this)
+   - Add it to your `.env` file:
+```
+OMDB_API_KEY=your_omdb_key_here
+```
+   If you skip this step, the app still works — it just won't show posters, cast, or ratings. Trailer search links work either way (no key needed).
+
+   Note: OMDb doesn't provide "where to watch" streaming data. Poster, top cast, and IMDb rating are included; trailer is a YouTube search link rather than a direct link to the exact official trailer.
+
+4. Start the application:
 ```
 python app.py
 ```
 
-4. Open your browser and navigate to:
+5. Open your browser and navigate to:
 ```
 http://127.0.0.1:5000
 ```

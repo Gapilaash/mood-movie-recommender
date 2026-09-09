@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0d11">
+<title>My Favorites — Mood Movie Recommender</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #131313;
+    --surface2: #1b1b1b;
+    --accent: #c41e3a;
+    --accent-soft: rgba(196, 30, 58, 0.14);
+    --accent2: #d98a92;
+    --text: #ece9e6;
+    --muted: #8f8b87;
+    --border: rgba(236, 233, 230, 0.1);
+    --radius: 8px;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-display: 'Fraunces', Georgia, serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Back button ── */
+  .back-btn {
+    position: fixed; top: 16px; left: 16px; z-index: 50;
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); font-size: 0.82rem; font-family: var(--font-body);
+    cursor: pointer; transition: all 0.18s; text-decoration: none;
+  }
+  .back-btn:hover { border-color: var(--accent2); }
+
+  header {
+    padding: 48px 24px 0;
+    text-align: center;
+  }
+  .kicker {
+    font-size: 0.72rem; color: var(--accent); letter-spacing: 0.14em;
+    font-weight: 500; text-transform: uppercase;
+  }
+  header h1 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.9rem, 5vw, 2.7rem);
+    letter-spacing: -0.01em; line-height: 1.15;
+    margin-top: 10px;
+  }
+  header h1 em { font-style: italic; color: var(--accent); }
+  .subtitle {
+    font-size: 0.95rem; color: var(--muted); margin-top: 10px;
+    font-weight: 400; max-width: 380px; margin-left: auto; margin-right: auto;
+  }
+  .rule {
+    width: 44px; height: 2px; background: var(--accent);
+    margin: 22px auto 0; border-radius: 1px;
+  }
+
+  main { flex: 1; width: 100%; max-width: 620px; margin: 0 auto; padding: 28px 16px 60px; }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .stats-count {
+    font-size: 0.82rem; color: var(--muted); font-weight: 500;
+  }
+  .clear-all-btn {
+    background: none; border: none; color: var(--muted);
+    font-size: 0.8rem; cursor: pointer; font-family: var(--font-body);
+    text-decoration: underline; text-underline-offset: 2px; padding: 0;
+  }
+  .clear-all-btn:hover { color: var(--accent); }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center; padding: 60px 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .empty-icon { font-size: 2.4rem; margin-bottom: 14px; }
+  .empty-title {
+    font-family: var(--font-display); font-size: 1.3rem;
+    font-weight: 500; margin-bottom: 8px;
+  }
+  .empty-sub { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+  .go-home-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    margin-top: 22px; padding: 12px 24px;
+    background: var(--accent); color: #f4eeee;
+    border: none; border-radius: 6px; cursor: pointer;
+    font-size: 0.9rem; font-weight: 600; font-family: var(--font-body);
+    text-decoration: none; transition: background 0.2s;
+  }
+  .go-home-btn:hover { background: #a91930; }
+
+  /* ── Movie card ── */
+  .movie-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    border-radius: var(--radius); padding: 18px 20px; margin-bottom: 10px;
+    display: flex; gap: 16px; align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+  .movie-card:hover { border-color: var(--accent2); border-left-color: var(--accent); }
+
+  .movie-num {
+    font-family: var(--font-display); font-style: italic; font-size: 1.3rem;
+    color: var(--accent); opacity: 0.7; line-height: 1.4;
+    flex-shrink: 0; width: 22px; text-align: right;
+  }
+  .movie-poster {
+    flex-shrink: 0; width: 64px; height: 96px; border-radius: 6px;
+    object-fit: cover; background: var(--surface2); border: 1px solid var(--border);
+  }
+  .movie-poster.placeholder {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 0.68rem; text-align: center; padding: 4px;
+  }
+  .movie-body { flex: 1; min-width: 0; }
+  .movie-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; color: var(--text); line-height: 1.3; }
+  .movie-meta { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+  .genre-tag {
+    font-size: 0.74rem; font-weight: 500; padding: 3px 10px;
+    border-radius: 999px; border: 1px solid var(--border);
+    color: var(--accent2);
+  }
+  .year-tag { font-size: 0.8rem; color: var(--muted); }
+  .movie-reason { font-size: 0.9rem; color: var(--muted); margin-top: 9px; line-height: 1.55; }
+  .movie-cast { font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
+  .movie-cast b { color: var(--text); font-weight: 500; }
+
+  .saved-mood-tag {
+    display: inline-block; margin-top: 8px;
+    font-size: 0.74rem; color: var(--muted);
+    padding: 3px 10px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface2);
+  }
+  .saved-mood-tag span { color: var(--accent2); }
+
+  .movie-extra-row {
+    display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .trailer-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent2);
+    text-decoration: none; border: 1px solid var(--border);
+    padding: 5px 10px; border-radius: 999px; transition: all 0.18s;
+  }
+  .trailer-link:hover { border-color: var(--accent2); color: var(--text); }
+  .provider-tag {
+    font-size: 0.74rem; padding: 3px 9px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--text); background: var(--surface2);
+  }
+
+  .movie-actions-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .icon-btn {
+    width: 32px; height: 32px; border-radius: 999px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.18s;
+  }
+  .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .remove-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Sort controls ── */
+  .sort-bar {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .sort-label { font-size: 0.78rem; color: var(--muted); }
+  .sort-chip {
+    padding: 5px 12px; border-radius: 999px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); font-size: 0.78rem; cursor: pointer;
+    transition: all 0.18s; font-family: var(--font-body);
+  }
+  .sort-chip:hover { border-color: var(--accent2); color: var(--text); }
+  .sort-chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 20px; font-size: 0.85rem;
+    color: var(--text); transition: transform 0.3s ease;
+    z-index: 9999; white-space: nowrap; pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 480px) {
+    header { padding: 36px 16px 0; }
+    .movie-card { padding: 14px 16px; gap: 12px; }
+    .back-btn { font-size: 0.78rem; padding: 7px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<a class="back-btn" href="/">
+  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path d="M19 12H5M12 5l-7 7 7 7"/>
+  </svg>
+  Back
+</a>
+
+<header>
+  <div class="kicker">Your saved picks</div>
+  <h1>My <em>Favorites</em></h1>
+  <p class="subtitle">All the films you've saved across your sessions.</p>
+  <div class="rule"></div>
+</header>
+
+<main>
+  <div id="content"></div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let favoritesArr = JSON.parse(localStorage.getItem('mmr_favorites') || '[]');
+  let sortMode = 'recent'; // 'recent' | 'title' | 'year'
+
+  function movieKey(m) { return `${m.title}__${m.year || ''}`; }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  function removeFavorite(key) {
+    favoritesArr = favoritesArr.filter(f => movieKey(f) !== key);
+    localStorage.setItem('mmr_favorites', JSON.stringify(favoritesArr));
+    showToast('Removed from favorites');
+    render();
+  }
+
+  function clearAll() {
+    if (!confirm('Remove all favorites?')) return;
+    favoritesArr = [];
+    localStorage.setItem('mmr_favorites', JSON.stringify(favoritesArr));
+    render();
+  }
+
+  function setSort(mode) {
+    sortMode = mode;
+    render();
+  }
+
+  function getSorted() {
+    const arr = [...favoritesArr];
+    if (sortMode === 'title') arr.sort((a, b) => a.title.localeCompare(b.title));
+    else if (sortMode === 'year') arr.sort((a, b) => (b.year || 0) - (a.year || 0));
+    // 'recent' = natural order (as saved)
+    return arr;
+  }
+
+  function render() {
+    const el = document.getElementById('content');
+
+    if (!favoritesArr.length) {
+      el.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🎬</div>
+          <div class="empty-title">No favorites yet</div>
+          <p class="empty-sub">Head back and tap the heart icon on any movie recommendation to save it here.</p>
+          <a class="go-home-btn" href="/">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/>
+            </svg>
+            Find movies
+          </a>
+        </div>`;
+      return;
+    }
+
+    const sorted = getSorted();
+
+    let html = `
+      <div class="sort-bar">
+        <span class="sort-label">Sort:</span>
+        <button class="sort-chip ${sortMode === 'recent' ? 'active' : ''}" onclick="setSort('recent')">Recently saved</button>
+        <button class="sort-chip ${sortMode === 'title' ? 'active' : ''}" onclick="setSort('title')">Title A–Z</button>
+        <button class="sort-chip ${sortMode === 'year' ? 'active' : ''}" onclick="setSort('year')">Newest first</button>
+      </div>
+      <div class="stats-bar">
+        <span class="stats-count">${favoritesArr.length} saved movie${favoritesArr.length !== 1 ? 's' : ''}</span>
+        <button class="clear-all-btn" onclick="clearAll()">Clear all</button>
+      </div>`;
+
+    sorted.forEach((m, i) => {
+      const key = movieKey(m).replace(/'/g, "\\'");
+
+      const posterHtml = m.poster_url
+        ? `<img class="movie-poster" src="${m.poster_url}" alt="${m.title} poster" loading="lazy">`
+        : `<div class="movie-poster placeholder">No poster</div>`;
+
+      const castHtml = (m.cast && m.cast.length)
+        ? `<div class="movie-cast"><b>Cast:</b> ${m.cast.join(', ')}</div>`
+        : '';
+
+      const trailerHtml = m.trailer_url
+        ? `<a class="trailer-link" href="${m.trailer_url}" target="_blank" rel="noopener">
+             <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+             Search trailer
+           </a>`
+        : '';
+
+      const ratingHtml = m.imdb_rating
+        ? `<span class="provider-tag">⭐ ${m.imdb_rating} IMDb</span>`
+        : '';
+
+      const moodHtml = m.savedMood
+        ? `<div class="saved-mood-tag">Saved for <span>"${m.savedMood}"</span></div>`
+        : '';
+
+      html += `
+        <div class="movie-card">
+          <div class="movie-num">${i + 1}</div>
+          ${posterHtml}
+          <div class="movie-body">
+            <div class="movie-title">${m.title}</div>
+            <div class="movie-meta">
+              <span class="genre-tag">${m.genre || ''}</span>
+              ${m.year ? `<span class="year-tag">${m.year}</span>` : ''}
+            </div>
+            ${m.reason ? `<div class="movie-reason">${m.reason}</div>` : ''}
+            ${castHtml}
+            ${moodHtml}
+            <div class="movie-extra-row">
+              ${ratingHtml}
+              ${trailerHtml}
+            </div>
+            <div class="movie-actions-row">
+              <button class="icon-btn remove-btn" title="Remove from favorites" onclick="removeFavorite('${key}')">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    el.innerHTML = html;
+  }
+
+  render();
+</script>
+</body>
+</html>

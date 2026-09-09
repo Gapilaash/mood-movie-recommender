@@ -61,6 +61,38 @@
     margin: 22px auto 0; border-radius: 1px;
   }
 
+  .fav-nav {
+    position: fixed; top: 16px; right: 16px; z-index: 50;
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); font-size: 0.82rem; font-family: var(--font-body);
+    cursor: pointer; transition: all 0.18s; text-decoration: none;
+  }
+  .fav-nav:hover { border-color: var(--accent2); }
+  .fav-nav svg { color: var(--accent); }
+
+  .favorites-panel {
+    display: none; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; margin-top: 18px;
+  }
+  .favorites-panel-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .favorites-panel-header h2 {
+    font-family: var(--font-display); font-size: 1.15rem; font-weight: 500;
+  }
+  .fav-empty { color: var(--muted); font-size: 0.88rem; text-align: center; padding: 20px 0; }
+  .fav-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .fav-item:last-child { border-bottom: none; }
+  .fav-item-body { flex: 1; min-width: 0; }
+  .fav-item-title { font-size: 0.92rem; color: var(--text); font-weight: 500; }
+  .fav-item-meta { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+
   .mood-chips {
     display: flex; flex-wrap: wrap; gap: 8px;
     justify-content: center; padding: 26px 20px 0;
@@ -86,14 +118,27 @@
     color: var(--muted); margin-bottom: 7px;
   }
 
+  .input-group { position: relative; }
   input[type="text"] {
-    width: 100%; padding: 13px 15px; border-radius: 6px;
+    width: 100%; padding: 13px 46px 13px 15px; border-radius: 6px;
     border: 1px solid var(--border); background: var(--surface2);
     color: var(--text); font-size: 1rem; font-family: var(--font-body);
     outline: none; transition: border-color 0.2s; -webkit-appearance: none;
   }
   input[type="text"]::placeholder { color: var(--muted); }
   input[type="text"]:focus { border-color: var(--accent2); }
+
+  .mic-btn {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.18s;
+  }
+  .mic-btn:hover { border-color: var(--accent2); color: var(--text); }
+  .mic-btn.listening { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); animation: pulse 1.2s ease-in-out infinite; }
+  .mic-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); } 50% { box-shadow: 0 0 0 6px transparent; } }
 
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
 
@@ -160,6 +205,14 @@
     color: var(--accent); opacity: 0.7; line-height: 1.4;
     flex-shrink: 0; width: 22px; text-align: right;
   }
+  .movie-poster {
+    flex-shrink: 0; width: 64px; height: 96px; border-radius: 6px;
+    object-fit: cover; background: var(--surface2); border: 1px solid var(--border);
+  }
+  .movie-poster.placeholder {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 0.68rem; text-align: center; padding: 4px;
+  }
   .movie-body { flex: 1; min-width: 0; }
   .movie-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; color: var(--text); line-height: 1.3; }
   .movie-meta { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
@@ -170,6 +223,37 @@
   }
   .year-tag { font-size: 0.8rem; color: var(--muted); }
   .movie-reason { font-size: 0.9rem; color: var(--muted); margin-top: 9px; line-height: 1.55; }
+  .movie-cast { font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
+  .movie-cast b { color: var(--text); font-weight: 500; }
+  .movie-extra-row {
+    display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .trailer-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent2);
+    text-decoration: none; border: 1px solid var(--border);
+    padding: 5px 10px; border-radius: 999px; transition: all 0.18s;
+  }
+  .trailer-link:hover { border-color: var(--accent2); color: var(--text); }
+  .watch-providers { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .watch-label { font-size: 0.74rem; color: var(--muted); }
+  .provider-tag {
+    font-size: 0.74rem; padding: 3px 9px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--text); background: var(--surface2);
+  }
+
+  .movie-actions-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .icon-btn {
+    width: 32px; height: 32px; border-radius: 999px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.18s; flex-shrink: 0;
+  }
+  .icon-btn:hover { border-color: var(--accent2); color: var(--text); }
+  .icon-btn.save-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .icon-btn.rate-up.active { border-color: #6fae7e; color: #6fae7e; background: rgba(111,174,126,0.14); }
+  .icon-btn.rate-down.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .actions-spacer { flex: 1; }
 
   .card-actions { display: flex; gap: 10px; margin-top: 22px; }
   .ghost-btn {
@@ -217,6 +301,11 @@
 </head>
 <body>
 
+<a class="fav-nav" id="fav-nav-btn" href="/favorites">
+  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.1C.86 10.2 1.6 6.6 4.6 5.1 7 3.9 9.6 4.7 12 7.3c2.4-2.6 5-3.4 7.4-2.2 3 1.5 3.74 5.1 1.9 7.8C18.7 16.65 12 21 12 21z"/></svg>
+  <span id="fav-count-label">Favorites</span>
+</a>
+
 <header>
   <div class="kicker">Personalized picks</div>
   <h1>Mood Movie<br><em>Recommender</em></h1>
@@ -238,7 +327,12 @@
 <main>
   <div class="form-card">
     <label for="mood-input">Your mood</label>
-    <input type="text" id="mood-input" placeholder="e.g. happy and hopeful, or tired after a long week…" autocomplete="off">
+    <div class="input-group">
+      <input type="text" id="mood-input" placeholder="e.g. happy and hopeful, or tired after a long week…" autocomplete="off">
+      <button type="button" class="mic-btn" id="mic-btn" onclick="toggleVoiceInput()" title="Speak your mood">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
+      </button>
+    </div>
 
     <div class="row">
       <div>
@@ -297,9 +391,141 @@
   ];
 
   let historyArr = JSON.parse(localStorage.getItem('mmr_history') || '[]');
+  let favoritesArr = JSON.parse(localStorage.getItem('mmr_favorites') || '[]');
+  let ratingsObj = JSON.parse(localStorage.getItem('mmr_ratings') || '{}');
   let currentMovies = [];
+  let currentMood = '';
 
   renderHistory();
+  updateFavCount();
+
+  // ---------- Voice input (Web Speech API) ----------
+  const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  let isListening = false;
+
+  if (!SpeechRecognitionCtor) {
+    const micBtn = document.getElementById('mic-btn');
+    if (micBtn) { micBtn.disabled = true; micBtn.title = 'Voice input not supported in this browser'; }
+  }
+
+  function toggleVoiceInput() {
+    if (!SpeechRecognitionCtor) return;
+    const micBtn = document.getElementById('mic-btn');
+    const input = document.getElementById('mood-input');
+
+    if (isListening) {
+      recognition.stop();
+      return;
+    }
+
+    recognition = new SpeechRecognitionCtor();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      isListening = true;
+      micBtn.classList.add('listening');
+    };
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      input.value = transcript;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      input.focus();
+    };
+    recognition.onerror = () => {
+      showToast('Could not hear you — try again');
+    };
+    recognition.onend = () => {
+      isListening = false;
+      micBtn.classList.remove('listening');
+    };
+
+    recognition.start();
+  }
+
+  // ---------- Favorites ----------
+  function movieKey(m) { return `${m.title}__${m.year || ''}`; }
+
+  function isFavorited(m) {
+    return favoritesArr.some(f => movieKey(f) === movieKey(m));
+  }
+
+  function toggleFavorite(i) {
+    const m = currentMovies[i];
+    if (!m) return;
+    if (isFavorited(m)) {
+      favoritesArr = favoritesArr.filter(f => movieKey(f) !== movieKey(m));
+      showToast('Removed from favorites');
+    } else {
+      favoritesArr = [{ ...m, savedMood: currentMood }, ...favoritesArr];
+      showToast('Saved to favorites');
+    }
+    localStorage.setItem('mmr_favorites', JSON.stringify(favoritesArr));
+    updateFavCount();
+    renderFavorites();
+    renderResults();
+  }
+
+  function removeFavorite(key) {
+    favoritesArr = favoritesArr.filter(f => movieKey(f) !== key);
+    localStorage.setItem('mmr_favorites', JSON.stringify(favoritesArr));
+    updateFavCount();
+    renderFavorites();
+    renderResults();
+  }
+
+  function updateFavCount() {
+    document.getElementById('fav-count-label').textContent =
+      favoritesArr.length ? `Favorites (${favoritesArr.length})` : 'Favorites';
+  }
+
+  function toggleFavoritesPanel() {
+    const panel = document.getElementById('favorites-panel');
+    const showing = panel.style.display === 'block';
+    panel.style.display = showing ? 'none' : 'block';
+    if (!showing) { renderFavorites(); panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  }
+
+  function renderFavorites() {
+    const el = document.getElementById('favorites-list');
+    if (!favoritesArr.length) {
+      el.innerHTML = '<div class="fav-empty">No favorites saved yet — tap the heart on any pick to save it here.</div>';
+      return;
+    }
+    el.innerHTML = favoritesArr.map(m => `
+      <div class="fav-item">
+        <div class="fav-item-body">
+          <div class="fav-item-title">${m.title}${m.year ? ` (${m.year})` : ''}</div>
+          <div class="fav-item-meta">${m.genre || ''}${m.savedMood ? ` · saved for "${m.savedMood}"` : ''}</div>
+        </div>
+        <button class="icon-btn save-btn active" title="Remove from favorites" onclick="removeFavorite('${movieKey(m).replace(/'/g, "\\'")}')">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.1C.86 10.2 1.6 6.6 4.6 5.1 7 3.9 9.6 4.7 12 7.3c2.4-2.6 5-3.4 7.4-2.2 3 1.5 3.74 5.1 1.9 7.8C18.7 16.65 12 21 12 21z"/></svg>
+        </button>
+      </div>
+    `).join('');
+  }
+
+  // ---------- Ratings (thumbs up/down) ----------
+  function rateMovie(i, rating) {
+    const m = currentMovies[i];
+    if (!m) return;
+    const key = movieKey(m);
+    const current = ratingsObj[key];
+    ratingsObj[key] = current === rating ? null : rating;
+    if (!ratingsObj[key]) delete ratingsObj[key];
+    localStorage.setItem('mmr_ratings', JSON.stringify(ratingsObj));
+    renderResults();
+
+    if (ratingsObj[key]) {
+      fetch('/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: m.title, rating: ratingsObj[key], mood: currentMood })
+      }).catch(() => {});
+    }
+  }
 
   function fillMood(text) {
     document.getElementById('mood-input').value = text;
@@ -339,7 +565,7 @@
     }, 1800);
   }
 
-  async function getRecommendations() {
+  async function getRecommendations(isRegenerate) {
     const mood = document.getElementById('mood-input').value.trim();
     const language = document.getElementById('language-select').value;
     const count = document.getElementById('count-select').value;
@@ -349,7 +575,6 @@
     const btn = document.getElementById('submit-btn');
 
     errorEl.style.display = 'none';
-    resultsEl.innerHTML = '';
 
     if (!mood) {
       errorEl.textContent = "Type how you're feeling, or pick a mood above.";
@@ -357,15 +582,19 @@
       return;
     }
 
+    if (!isRegenerate) resultsEl.innerHTML = '';
     btn.disabled = true;
     loadingEl.style.display = 'block';
     const timer = cycleLoading();
+
+    const payload = { mood, language, count: parseInt(count) };
+    if (isRegenerate) payload.exclude = currentMovies.map(m => m.title);
 
     try {
       const res = await fetch('/recommend', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mood, language, count: parseInt(count) })
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       clearInterval(timer);
@@ -376,37 +605,10 @@
 
       const movies = JSON.parse(data.result);
       currentMovies = movies;
+      currentMood = mood;
       addToHistory(mood);
 
-      let html = `<div class="results-header"><span>${movies.length} picks for "${mood}"</span><button class="clear-btn" onclick="clearResults()">Clear</button></div>`;
-      movies.forEach((m, i) => {
-        html += `
-          <div class="movie-card">
-            <div class="movie-num">${i + 1}</div>
-            <div class="movie-body">
-              <div class="movie-title">${m.title}</div>
-              <div class="movie-meta">
-                <span class="genre-tag">${m.genre}</span>
-                ${m.year ? `<span class="year-tag">${m.year}</span>` : ''}
-              </div>
-              <div class="movie-reason">${m.reason}</div>
-            </div>
-          </div>`;
-      });
-
-      html += `
-        <div class="card-actions">
-          <button class="ghost-btn" onclick="copyList()">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            Copy list
-          </button>
-          <button class="ghost-btn" onclick="shareList()">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
-            Share
-          </button>
-        </div>`;
-
-      resultsEl.innerHTML = html;
+      renderResults();
       resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (e) {
       clearInterval(timer);
@@ -417,11 +619,106 @@
     }
   }
 
+  function regenerate() { getRecommendations(true); }
+
+  function renderResults() {
+    const resultsEl = document.getElementById('results');
+    const movies = currentMovies;
+
+    let html = `<div class="results-header"><span>${movies.length} picks for "${currentMood}"</span><button class="clear-btn" onclick="clearResults()">Clear</button></div>`;
+    movies.forEach((m, i) => {
+      const posterHtml = m.poster_url
+        ? `<img class="movie-poster" src="${m.poster_url}" alt="${m.title} poster" loading="lazy">`
+        : `<div class="movie-poster placeholder">No poster</div>`;
+
+      const castHtml = (m.cast && m.cast.length)
+        ? `<div class="movie-cast"><b>Cast:</b> ${m.cast.join(', ')}</div>`
+        : '';
+
+      const trailerHtml = m.trailer_url
+        ? `<a class="trailer-link" href="${m.trailer_url}" target="_blank" rel="noopener">
+             <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+             Search trailer
+           </a>`
+        : '';
+
+      const providersHtml = (m.watch_providers && m.watch_providers.length)
+        ? `<div class="watch-providers">
+             <span class="watch-label">Watch on:</span>
+             ${m.watch_providers.slice(0, 4).map(p => `<span class="provider-tag">${p}</span>`).join('')}
+           </div>`
+        : '';
+
+      const ratingHtml = m.imdb_rating
+        ? `<span class="provider-tag">⭐ ${m.imdb_rating} IMDb</span>`
+        : '';
+
+      const key = movieKey(m);
+      const saved = isFavorited(m);
+      const userRating = ratingsObj[key];
+
+      html += `
+        <div class="movie-card">
+          <div class="movie-num">${i + 1}</div>
+          ${posterHtml}
+          <div class="movie-body">
+            <div class="movie-title">${m.title}</div>
+            <div class="movie-meta">
+              <span class="genre-tag">${m.genre}</span>
+              ${m.year ? `<span class="year-tag">${m.year}</span>` : ''}
+            </div>
+            <div class="movie-reason">${m.reason}</div>
+            ${castHtml}
+            <div class="movie-extra-row">
+              ${providersHtml}
+              ${ratingHtml}
+              ${trailerHtml}
+            </div>
+            <div class="movie-actions-row">
+              <button class="icon-btn save-btn ${saved ? 'active' : ''}" title="${saved ? 'Remove from favorites' : 'Save to favorites'}" onclick="toggleFavorite(${i})">
+                <svg width="14" height="14" fill="${saved ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.1C.86 10.2 1.6 6.6 4.6 5.1 7 3.9 9.6 4.7 12 7.3c2.4-2.6 5-3.4 7.4-2.2 3 1.5 3.74 5.1 1.9 7.8C18.7 16.65 12 21 12 21z"/></svg>
+              </button>
+              <button class="icon-btn rate-up ${userRating === 'up' ? 'active' : ''}" title="Good pick" onclick="rateMovie(${i}, 'up')">
+                <svg width="14" height="14" fill="${userRating === 'up' ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/></svg>
+              </button>
+              <button class="icon-btn rate-down ${userRating === 'down' ? 'active' : ''}" title="Not for me" onclick="rateMovie(${i}, 'down')">
+                <svg width="14" height="14" fill="${userRating === 'down' ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z"/></svg>
+              </button>
+              <div class="actions-spacer"></div>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    html += `
+      <div class="card-actions">
+        <button class="ghost-btn" onclick="regenerate()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          Regenerate
+        </button>
+        <button class="ghost-btn" onclick="copyList()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy list
+        </button>
+        <button class="ghost-btn" onclick="shareList()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+          Share
+        </button>
+      </div>`;
+
+    resultsEl.innerHTML = html;
+  }
+
   function clearResults() { document.getElementById('results').innerHTML = ''; currentMovies = []; }
 
   function copyList() {
     if (!currentMovies.length) return;
-    const text = currentMovies.map((m, i) => `${i+1}. ${m.title} (${m.genre})\n   ${m.reason}`).join('\n\n');
+    const text = currentMovies.map((m, i) => {
+      let line = `${i+1}. ${m.title} (${m.genre})\n   ${m.reason}`;
+      if (m.watch_providers && m.watch_providers.length) line += `\n   Watch on: ${m.watch_providers.join(', ')}`;
+      if (m.trailer_url) line += `\n   Trailer: ${m.trailer_url}`;
+      return line;
+    }).join('\n\n');
     navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
   }
 
