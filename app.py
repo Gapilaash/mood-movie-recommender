@@ -83,6 +83,8 @@ def recommend():
     language = data.get("language", "Any").strip()
     count = int(data.get("count", 5))
     count = max(1, min(count, 10))
+    genre = data.get("genre", "Any").strip()
+    decade = data.get("decade", "Any").strip()
     exclude = data.get("exclude", [])
     if not isinstance(exclude, list):
         exclude = []
@@ -93,6 +95,14 @@ def recommend():
 
     lang_instruction = f"in {language}" if language != "Any" else "in any language"
 
+    genre_instruction = ""
+    if genre and genre != "Any":
+        genre_instruction = f"\n    Only suggest movies in the {genre} genre.\n"
+
+    decade_instruction = ""
+    if decade and decade != "Any":
+        decade_instruction = f"\n    Only suggest movies released in the {decade}.\n"
+
     exclude_instruction = ""
     if exclude:
         exclude_list = ", ".join(exclude)
@@ -102,7 +112,7 @@ def recommend():
     User's current mood/feeling: "{mood}"
 
     Suggest {count} movies {lang_instruction} that match this mood perfectly.
-    {exclude_instruction}
+    {genre_instruction}{decade_instruction}{exclude_instruction}
     For each movie give:
     - title
     - genre

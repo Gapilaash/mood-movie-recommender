@@ -26,6 +26,18 @@
     --font-display: 'Fraunces', Georgia, serif;
   }
 
+  :root[data-theme="light"] {
+    --bg: #f7f5f2;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --accent: #c41e3a;
+    --accent-soft: rgba(196, 30, 58, 0.09);
+    --accent2: #a92d40;
+    --text: #201e1c;
+    --muted: #71685f;
+    --border: rgba(32, 30, 28, 0.12);
+  }
+
   html { scroll-behavior: smooth; }
   body {
     font-family: var(--font-body);
@@ -61,16 +73,28 @@
     margin: 22px auto 0; border-radius: 1px;
   }
 
-  .fav-nav {
-    position: fixed; top: 16px; right: 16px; z-index: 50;
+  .nav-bar-left, .nav-bar-right {
+    position: fixed; top: 16px; z-index: 50; display: flex; gap: 8px;
+  }
+  .nav-bar-left { left: 16px; }
+  .nav-bar-right { right: 16px; }
+
+  .nav-pill {
     display: flex; align-items: center; gap: 6px;
     padding: 8px 14px; border-radius: 999px;
     border: 1px solid var(--border); background: var(--surface);
     color: var(--text); font-size: 0.82rem; font-family: var(--font-body);
     cursor: pointer; transition: all 0.18s;
   }
-  .fav-nav:hover { border-color: var(--accent2); }
-  .fav-nav svg { color: var(--accent); }
+  .nav-pill:hover { border-color: var(--accent2); }
+  .nav-pill svg { color: var(--accent); }
+
+  .theme-toggle-btn {
+    width: 34px; height: 34px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.18s;
+  }
+  .theme-toggle-btn:hover { border-color: var(--accent2); }
 
   .favorites-panel {
     display: none; background: var(--surface); border: 1px solid var(--border);
@@ -251,6 +275,7 @@
   }
   .icon-btn:hover { border-color: var(--accent2); color: var(--text); }
   .icon-btn.save-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .icon-btn.watchlist-btn.active { border-color: var(--accent2); color: var(--accent2); background: var(--accent-soft); }
   .icon-btn.rate-up.active { border-color: #6fae7e; color: #6fae7e; background: rgba(111,174,126,0.14); }
   .icon-btn.rate-down.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
   .actions-spacer { flex: 1; }
@@ -296,15 +321,29 @@
     .row { grid-template-columns: 1fr; gap: 10px; }
     .card-actions { flex-direction: column; }
     .movie-card { padding: 14px 16px; gap: 12px; }
+    .nav-pill span { display: none; }
+    .nav-pill { padding: 8px 10px; }
   }
 </style>
 </head>
 <body>
 
-<button class="fav-nav" id="fav-nav-btn" onclick="toggleFavoritesPanel()">
-  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.1C.86 10.2 1.6 6.6 4.6 5.1 7 3.9 9.6 4.7 12 7.3c2.4-2.6 5-3.4 7.4-2.2 3 1.5 3.74 5.1 1.9 7.8C18.7 16.65 12 21 12 21z"/></svg>
-  <span id="fav-count-label">Favorites</span>
-</button>
+<div class="nav-bar-left">
+  <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle light/dark theme">
+    <svg id="theme-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+  </button>
+</div>
+
+<div class="nav-bar-right">
+  <button class="nav-pill" id="watchlist-nav-btn" onclick="toggleWatchlistPanel()">
+    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M6 2a2 2 0 00-2 2v18l8-5 8 5V4a2 2 0 00-2-2H6z"/></svg>
+    <span id="watchlist-count-label">Watchlist</span>
+  </button>
+  <button class="nav-pill" id="fav-nav-btn" onclick="toggleFavoritesPanel()">
+    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.1C.86 10.2 1.6 6.6 4.6 5.1 7 3.9 9.6 4.7 12 7.3c2.4-2.6 5-3.4 7.4-2.2 3 1.5 3.74 5.1 1.9 7.8C18.7 16.65 12 21 12 21z"/></svg>
+    <span id="fav-count-label">Favorites</span>
+  </button>
+</div>
 
 <header>
   <div class="kicker">Personalized picks</div>
@@ -360,6 +399,37 @@
       </div>
     </div>
 
+    <div class="row" style="margin-top:12px;">
+      <div>
+        <label for="genre-select">Genre (optional)</label>
+        <select id="genre-select">
+          <option value="Any">Any genre</option>
+          <option value="Comedy">Comedy</option>
+          <option value="Drama">Drama</option>
+          <option value="Action">Action</option>
+          <option value="Thriller">Thriller</option>
+          <option value="Romance">Romance</option>
+          <option value="Horror">Horror</option>
+          <option value="Sci-Fi">Sci-Fi</option>
+          <option value="Animation">Animation</option>
+          <option value="Documentary">Documentary</option>
+          <option value="Mystery">Mystery</option>
+        </select>
+      </div>
+      <div>
+        <label for="decade-select">Decade (optional)</label>
+        <select id="decade-select">
+          <option value="Any">Any decade</option>
+          <option value="2020s">2020s</option>
+          <option value="2010s">2010s</option>
+          <option value="2000s">2000s</option>
+          <option value="1990s">1990s</option>
+          <option value="1980s">1980s</option>
+          <option value="Before 1980">Before 1980</option>
+        </select>
+      </div>
+    </div>
+
     <button class="btn" id="submit-btn" onclick="getRecommendations()">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>
       Find movies for my mood
@@ -378,6 +448,14 @@
       <button class="clear-btn" onclick="toggleFavoritesPanel()">Close</button>
     </div>
     <div id="favorites-list"></div>
+  </div>
+
+  <div class="favorites-panel" id="watchlist-panel">
+    <div class="favorites-panel-header">
+      <h2>Your watchlist</h2>
+      <button class="clear-btn" onclick="toggleWatchlistPanel()">Close</button>
+    </div>
+    <div id="watchlist-list"></div>
   </div>
 
   <div id="results"></div>
@@ -400,12 +478,35 @@
 
   let historyArr = JSON.parse(localStorage.getItem('mmr_history') || '[]');
   let favoritesArr = JSON.parse(localStorage.getItem('mmr_favorites') || '[]');
+  let watchlistArr = JSON.parse(localStorage.getItem('mmr_watchlist') || '[]');
   let ratingsObj = JSON.parse(localStorage.getItem('mmr_ratings') || '{}');
   let currentMovies = [];
   let currentMood = '';
 
   renderHistory();
   updateFavCount();
+  updateWatchlistCount();
+  applyTheme(localStorage.getItem('mmr_theme') || 'dark');
+
+  // ---------- Theme ----------
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const icon = document.getElementById('theme-icon');
+    if (theme === 'light') {
+      // moon icon — tapping switches back to dark
+      icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+    } else {
+      // sun icon — tapping switches to light
+      icon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+    }
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    const next = current === 'light' ? 'dark' : 'light';
+    localStorage.setItem('mmr_theme', next);
+    applyTheme(next);
+  }
 
   // ---------- Voice input (Web Speech API) ----------
   const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -515,6 +616,66 @@
     `).join('');
   }
 
+  // ---------- Watchlist ----------
+  function isInWatchlist(m) {
+    return watchlistArr.some(w => movieKey(w) === movieKey(m));
+  }
+
+  function toggleWatchlist(i) {
+    const m = currentMovies[i];
+    if (!m) return;
+    if (isInWatchlist(m)) {
+      watchlistArr = watchlistArr.filter(w => movieKey(w) !== movieKey(m));
+      showToast('Removed from watchlist');
+    } else {
+      watchlistArr = [{ ...m, savedMood: currentMood }, ...watchlistArr];
+      showToast('Added to watchlist');
+    }
+    localStorage.setItem('mmr_watchlist', JSON.stringify(watchlistArr));
+    updateWatchlistCount();
+    renderWatchlist();
+    renderResults();
+  }
+
+  function removeFromWatchlist(key) {
+    watchlistArr = watchlistArr.filter(w => movieKey(w) !== key);
+    localStorage.setItem('mmr_watchlist', JSON.stringify(watchlistArr));
+    updateWatchlistCount();
+    renderWatchlist();
+    renderResults();
+  }
+
+  function updateWatchlistCount() {
+    document.getElementById('watchlist-count-label').textContent =
+      watchlistArr.length ? `Watchlist (${watchlistArr.length})` : 'Watchlist';
+  }
+
+  function toggleWatchlistPanel() {
+    const panel = document.getElementById('watchlist-panel');
+    const showing = panel.style.display === 'block';
+    panel.style.display = showing ? 'none' : 'block';
+    if (!showing) { renderWatchlist(); panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  }
+
+  function renderWatchlist() {
+    const el = document.getElementById('watchlist-list');
+    if (!watchlistArr.length) {
+      el.innerHTML = '<div class="fav-empty">Nothing here yet — tap the bookmark on any pick to save it for later.</div>';
+      return;
+    }
+    el.innerHTML = watchlistArr.map(m => `
+      <div class="fav-item">
+        <div class="fav-item-body">
+          <div class="fav-item-title">${m.title}${m.year ? ` (${m.year})` : ''}</div>
+          <div class="fav-item-meta">${m.genre || ''}${m.savedMood ? ` · saved for "${m.savedMood}"` : ''}</div>
+        </div>
+        <button class="icon-btn watchlist-btn active" title="Remove from watchlist" onclick="removeFromWatchlist('${movieKey(m).replace(/'/g, "\\'")}')">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M6 2a2 2 0 00-2 2v18l8-5 8 5V4a2 2 0 00-2-2H6z"/></svg>
+        </button>
+      </div>
+    `).join('');
+  }
+
   // ---------- Ratings (thumbs up/down) ----------
   function rateMovie(i, rating) {
     const m = currentMovies[i];
@@ -577,6 +738,8 @@
     const mood = document.getElementById('mood-input').value.trim();
     const language = document.getElementById('language-select').value;
     const count = document.getElementById('count-select').value;
+    const genre = document.getElementById('genre-select').value;
+    const decade = document.getElementById('decade-select').value;
     const errorEl = document.getElementById('error');
     const resultsEl = document.getElementById('results');
     const loadingEl = document.getElementById('loading');
@@ -595,7 +758,7 @@
     loadingEl.style.display = 'block';
     const timer = cycleLoading();
 
-    const payload = { mood, language, count: parseInt(count) };
+    const payload = { mood, language, count: parseInt(count), genre, decade };
     if (isRegenerate) payload.exclude = currentMovies.map(m => m.title);
 
     try {
@@ -673,6 +836,7 @@
 
       const key = movieKey(m);
       const saved = isFavorited(m);
+      const inWatchlist = isInWatchlist(m);
       const userRating = ratingsObj[key];
 
       html += `
@@ -696,6 +860,9 @@
               <button class="icon-btn save-btn ${saved ? 'active' : ''}" title="${saved ? 'Remove from favorites' : 'Save to favorites'}" onclick="toggleFavorite(${i})">
                 <svg width="14" height="14" fill="${saved ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.1C.86 10.2 1.6 6.6 4.6 5.1 7 3.9 9.6 4.7 12 7.3c2.4-2.6 5-3.4 7.4-2.2 3 1.5 3.74 5.1 1.9 7.8C18.7 16.65 12 21 12 21z"/></svg>
               </button>
+              <button class="icon-btn watchlist-btn ${inWatchlist ? 'active' : ''}" title="${inWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}" onclick="toggleWatchlist(${i})">
+                <svg width="14" height="14" fill="${inWatchlist ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2a2 2 0 00-2 2v18l8-5 8 5V4a2 2 0 00-2-2H6z"/></svg>
+              </button>
               <button class="icon-btn rate-up ${userRating === 'up' ? 'active' : ''}" title="Good pick" onclick="rateMovie(${i}, 'up')">
                 <svg width="14" height="14" fill="${userRating === 'up' ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/></svg>
               </button>
@@ -703,6 +870,9 @@
                 <svg width="14" height="14" fill="${userRating === 'down' ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z"/></svg>
               </button>
               <div class="actions-spacer"></div>
+              <button class="icon-btn share-btn" title="Share this pick" onclick="shareMovie(${i})">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+              </button>
             </div>
           </div>
         </div>`;
@@ -738,6 +908,14 @@
       return line;
     }).join('\n\n');
     navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+  }
+
+  function shareMovie(i) {
+    const m = currentMovies[i];
+    if (!m) return;
+    const text = `${m.title}${m.year ? ` (${m.year})` : ''} — ${m.reason}${m.trailer_url ? `\n${m.trailer_url}` : ''}`;
+    if (navigator.share) navigator.share({ title: m.title, text }).catch(() => {});
+    else navigator.clipboard.writeText(text).then(() => showToast('Copied — paste to share!'));
   }
 
   function shareList() {
