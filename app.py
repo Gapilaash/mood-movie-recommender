@@ -39,6 +39,15 @@ def omdb_enrich(title, year):
         res.raise_for_status()
         data = res.json()
 
+        # If the strict title+year lookup failed, retry without the year.
+        # The AI sometimes gives a slightly off release year, which makes
+        # OMDb's exact-year match miss even when the movie itself exists.
+        if data.get("Response") != "True" and year:
+            params.pop("y", None)
+            res = requests.get(OMDB_BASE, params=params, timeout=6)
+            res.raise_for_status()
+            data = res.json()
+
         if data.get("Response") != "True":
             return {}
 
@@ -65,11 +74,6 @@ def omdb_enrich(title, year):
 @app.route("/")
 def home():
     return render_template("index.html")
-
-
-@app.route("/favorites")
-def favorites():
-    return render_template("favorites.html")
 
 
 @app.route("/recommend", methods=["POST"])

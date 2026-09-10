@@ -67,7 +67,7 @@
     padding: 8px 14px; border-radius: 999px;
     border: 1px solid var(--border); background: var(--surface);
     color: var(--text); font-size: 0.82rem; font-family: var(--font-body);
-    cursor: pointer; transition: all 0.18s; text-decoration: none;
+    cursor: pointer; transition: all 0.18s;
   }
   .fav-nav:hover { border-color: var(--accent2); }
   .fav-nav svg { color: var(--accent); }
@@ -301,10 +301,10 @@
 </head>
 <body>
 
-<a class="fav-nav" id="fav-nav-btn" href="/favorites">
+<button class="fav-nav" id="fav-nav-btn" onclick="toggleFavoritesPanel()">
   <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.1C.86 10.2 1.6 6.6 4.6 5.1 7 3.9 9.6 4.7 12 7.3c2.4-2.6 5-3.4 7.4-2.2 3 1.5 3.74 5.1 1.9 7.8C18.7 16.65 12 21 12 21z"/></svg>
   <span id="fav-count-label">Favorites</span>
-</a>
+</button>
 
 <header>
   <div class="kicker">Personalized picks</div>
@@ -370,6 +370,14 @@
   <div class="loading" id="loading">
     <div class="spinner"></div>
     <p id="loading-text">Matching your mood to films…</p>
+  </div>
+
+  <div class="favorites-panel" id="favorites-panel">
+    <div class="favorites-panel-header">
+      <h2>Your favorites</h2>
+      <button class="clear-btn" onclick="toggleFavoritesPanel()">Close</button>
+    </div>
+    <div id="favorites-list"></div>
   </div>
 
   <div id="results"></div>
@@ -621,6 +629,16 @@
 
   function regenerate() { getRecommendations(true); }
 
+  function handlePosterError(imgEl) {
+    // Poster URL existed but the image itself failed to load (broken/expired
+    // link from OMDb). Swap it for the same placeholder used when there's
+    // no poster URL at all, instead of showing a broken-image icon.
+    const placeholder = document.createElement('div');
+    placeholder.className = 'movie-poster placeholder';
+    placeholder.textContent = 'No poster';
+    imgEl.replaceWith(placeholder);
+  }
+
   function renderResults() {
     const resultsEl = document.getElementById('results');
     const movies = currentMovies;
@@ -628,7 +646,7 @@
     let html = `<div class="results-header"><span>${movies.length} picks for "${currentMood}"</span><button class="clear-btn" onclick="clearResults()">Clear</button></div>`;
     movies.forEach((m, i) => {
       const posterHtml = m.poster_url
-        ? `<img class="movie-poster" src="${m.poster_url}" alt="${m.title} poster" loading="lazy">`
+        ? `<img class="movie-poster" src="${m.poster_url}" alt="${m.title} poster" loading="lazy" onerror="handlePosterError(this)">`
         : `<div class="movie-poster placeholder">No poster</div>`;
 
       const castHtml = (m.cast && m.cast.length)
