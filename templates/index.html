@@ -8,323 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #0a0a0a;
-    --surface: #131313;
-    --surface2: #1b1b1b;
-    --accent: #c41e3a;
-    --accent-soft: rgba(196, 30, 58, 0.14);
-    --accent2: #d98a92;
-    --text: #ece9e6;
-    --muted: #8f8b87;
-    --border: rgba(236, 233, 230, 0.1);
-    --radius: 8px;
-    --font-body: 'Inter', system-ui, sans-serif;
-    --font-display: 'Fraunces', Georgia, serif;
-  }
-
-  :root[data-theme="light"] {
-    --bg: #f7f5f2;
-    --surface: #ffffff;
-    --surface2: #f0ede8;
-    --accent: #c41e3a;
-    --accent-soft: rgba(196, 30, 58, 0.09);
-    --accent2: #a92d40;
-    --text: #201e1c;
-    --muted: #71685f;
-    --border: rgba(32, 30, 28, 0.12);
-  }
-
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: var(--font-body);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  header {
-    padding: 48px 24px 0;
-    text-align: center;
-  }
-  .kicker {
-    font-size: 0.72rem; color: var(--accent); letter-spacing: 0.14em;
-    font-weight: 500; text-transform: uppercase;
-  }
-  header h1 {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(1.9rem, 5vw, 2.7rem);
-    letter-spacing: -0.01em; line-height: 1.15;
-    margin-top: 10px;
-  }
-  header h1 em { font-style: italic; color: var(--accent); }
-  .subtitle {
-    font-size: 0.95rem; color: var(--muted); margin-top: 10px;
-    font-weight: 400; max-width: 380px; margin-left: auto; margin-right: auto;
-  }
-  .rule {
-    width: 44px; height: 2px; background: var(--accent);
-    margin: 22px auto 0; border-radius: 1px;
-  }
-
-  .nav-bar-left, .nav-bar-right {
-    position: fixed; top: 16px; z-index: 50; display: flex; gap: 8px;
-  }
-  .nav-bar-left { left: 16px; }
-  .nav-bar-right { right: 16px; }
-
-  .nav-pill {
-    display: flex; align-items: center; gap: 6px;
-    padding: 8px 14px; border-radius: 999px;
-    border: 1px solid var(--border); background: var(--surface);
-    color: var(--text); font-size: 0.82rem; font-family: var(--font-body);
-    cursor: pointer; transition: all 0.18s;
-  }
-  .nav-pill:hover { border-color: var(--accent2); }
-  .nav-pill svg { color: var(--accent); }
-
-  .theme-toggle-btn {
-    width: 34px; height: 34px; border-radius: 999px; border: 1px solid var(--border);
-    background: var(--surface); color: var(--text); cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: all 0.18s;
-  }
-  .theme-toggle-btn:hover { border-color: var(--accent2); }
-
-  .favorites-panel {
-    display: none; background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px; margin-top: 18px;
-  }
-  .favorites-panel-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 14px;
-  }
-  .favorites-panel-header h2 {
-    font-family: var(--font-display); font-size: 1.15rem; font-weight: 500;
-  }
-  .fav-empty { color: var(--muted); font-size: 0.88rem; text-align: center; padding: 20px 0; }
-  .fav-item {
-    display: flex; align-items: center; gap: 12px; padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .fav-item:last-child { border-bottom: none; }
-  .fav-item-body { flex: 1; min-width: 0; }
-  .fav-item-title { font-size: 0.92rem; color: var(--text); font-weight: 500; }
-  .fav-item-meta { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
-
-  .mood-chips {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    justify-content: center; padding: 26px 20px 0;
-  }
-  .chip {
-    padding: 8px 16px; border-radius: 999px;
-    border: 1px solid var(--border); background: transparent;
-    color: var(--muted); font-size: 0.83rem; cursor: pointer;
-    transition: all 0.18s; font-family: var(--font-body); user-select: none;
-  }
-  .chip:hover { border-color: var(--accent2); color: var(--text); }
-  .chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-
-  main { flex: 1; width: 100%; max-width: 620px; margin: 0 auto; padding: 20px 16px 48px; }
-
-  .form-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 28px; margin-top: 18px;
-  }
-
-  label {
-    display: block; font-size: 0.78rem; font-weight: 500;
-    color: var(--muted); margin-bottom: 7px;
-  }
-
-  .input-group { position: relative; }
-  input[type="text"] {
-    width: 100%; padding: 13px 46px 13px 15px; border-radius: 6px;
-    border: 1px solid var(--border); background: var(--surface2);
-    color: var(--text); font-size: 1rem; font-family: var(--font-body);
-    outline: none; transition: border-color 0.2s; -webkit-appearance: none;
-  }
-  input[type="text"]::placeholder { color: var(--muted); }
-  input[type="text"]:focus { border-color: var(--accent2); }
-
-  .mic-btn {
-    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
-    background: transparent; color: var(--muted); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.18s;
-  }
-  .mic-btn:hover { border-color: var(--accent2); color: var(--text); }
-  .mic-btn.listening { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); animation: pulse 1.2s ease-in-out infinite; }
-  .mic-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); } 50% { box-shadow: 0 0 0 6px transparent; } }
-
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-
-  select {
-    width: 100%; padding: 13px 15px; border-radius: 6px;
-    border: 1px solid var(--border); background: var(--surface2);
-    color: var(--text); font-size: 0.95rem; font-family: var(--font-body);
-    outline: none; cursor: pointer; -webkit-appearance: none; appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238b8f96' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
-  }
-  select:focus { border-color: var(--accent2); }
-  select option { background: #191d24; }
-
-  .btn {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 14px;
-    background: var(--accent);
-    color: #f4eeee; border: none; border-radius: 6px; cursor: pointer;
-    font-size: 0.95rem; font-weight: 600; font-family: var(--font-body);
-    margin-top: 20px; transition: background 0.2s, transform 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .btn:hover { background: #a91930; }
-  .btn:active { transform: scale(0.99); }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-  .loading { display: none; text-align: center; padding: 44px 20px; color: var(--muted); }
-  .spinner {
-    width: 30px; height: 30px; border: 2px solid var(--border);
-    border-top-color: var(--accent); border-radius: 50%;
-    animation: spin 0.8s linear infinite; margin: 0 auto 16px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .error-box {
-    display: none; background: rgba(190,90,80,.1);
-    border: 1px solid rgba(190,90,80,.3); border-radius: 6px;
-    padding: 12px 16px; color: #d68f85; font-size: 0.88rem; margin-top: 14px;
-  }
-
-  #results { margin-top: 28px; }
-  .results-header {
-    font-size: 0.82rem; font-weight: 500; color: var(--muted);
-    margin-bottom: 14px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .clear-btn {
-    background: none; border: none; color: var(--muted);
-    font-size: 0.8rem; cursor: pointer; font-family: var(--font-body); padding: 0;
-    text-decoration: underline; text-underline-offset: 2px;
-  }
-  .clear-btn:hover { color: var(--text); }
-
-  .movie-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-left: 2px solid var(--accent);
-    border-radius: var(--radius); padding: 18px 20px; margin-bottom: 10px;
-    display: flex; gap: 16px; align-items: flex-start;
-  }
-
-  .movie-num {
-    font-family: var(--font-display); font-style: italic; font-size: 1.3rem;
-    color: var(--accent); opacity: 0.7; line-height: 1.4;
-    flex-shrink: 0; width: 22px; text-align: right;
-  }
-  .movie-poster {
-    flex-shrink: 0; width: 64px; height: 96px; border-radius: 6px;
-    object-fit: cover; background: var(--surface2); border: 1px solid var(--border);
-  }
-  .movie-poster.placeholder {
-    display: flex; align-items: center; justify-content: center;
-    color: var(--muted); font-size: 0.68rem; text-align: center; padding: 4px;
-  }
-  .movie-body { flex: 1; min-width: 0; }
-  .movie-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; color: var(--text); line-height: 1.3; }
-  .movie-meta { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
-  .genre-tag {
-    font-size: 0.74rem; font-weight: 500; padding: 3px 10px;
-    border-radius: 999px; border: 1px solid var(--border);
-    color: var(--accent2);
-  }
-  .year-tag { font-size: 0.8rem; color: var(--muted); }
-  .movie-reason { font-size: 0.9rem; color: var(--muted); margin-top: 9px; line-height: 1.55; }
-  .movie-cast { font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
-  .movie-cast b { color: var(--text); font-weight: 500; }
-  .movie-extra-row {
-    display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap;
-  }
-  .trailer-link {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 0.78rem; font-weight: 500; color: var(--accent2);
-    text-decoration: none; border: 1px solid var(--border);
-    padding: 5px 10px; border-radius: 999px; transition: all 0.18s;
-  }
-  .trailer-link:hover { border-color: var(--accent2); color: var(--text); }
-  .watch-providers { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .watch-label { font-size: 0.74rem; color: var(--muted); }
-  .provider-tag {
-    font-size: 0.74rem; padding: 3px 9px; border-radius: 999px;
-    border: 1px solid var(--border); color: var(--text); background: var(--surface2);
-  }
-
-  .movie-actions-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
-  .icon-btn {
-    width: 32px; height: 32px; border-radius: 999px; border: 1px solid var(--border);
-    background: transparent; color: var(--muted); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.18s; flex-shrink: 0;
-  }
-  .icon-btn:hover { border-color: var(--accent2); color: var(--text); }
-  .icon-btn.save-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-  .icon-btn.watchlist-btn.active { border-color: var(--accent2); color: var(--accent2); background: var(--accent-soft); }
-  .icon-btn.rate-up.active { border-color: #6fae7e; color: #6fae7e; background: rgba(111,174,126,0.14); }
-  .icon-btn.rate-down.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-  .actions-spacer { flex: 1; }
-
-  .card-actions { display: flex; gap: 10px; margin-top: 22px; }
-  .ghost-btn {
-    flex: 1; padding: 11px; border: 1px solid var(--border);
-    background: transparent; color: var(--muted); border-radius: 6px;
-    font-size: 0.84rem; font-family: var(--font-body); cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 7px;
-    transition: all 0.18s;
-  }
-  .ghost-btn:hover { border-color: var(--accent2); color: var(--text); }
-
-  .toast {
-    position: fixed; bottom: 24px; left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 6px; padding: 10px 20px; font-size: 0.85rem;
-    color: var(--text); transition: transform 0.3s ease;
-    z-index: 9999; white-space: nowrap; pointer-events: none;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  .history-section { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
-  .history-title {
-    font-size: 0.8rem; font-weight: 500; color: var(--muted); margin-bottom: 10px;
-  }
-  .history-list { display: flex; flex-wrap: wrap; gap: 6px; }
-  .history-chip {
-    padding: 5px 12px; border-radius: 999px;
-    border: 1px solid var(--border); background: transparent;
-    color: var(--muted); font-size: 0.8rem; cursor: pointer; transition: all 0.18s;
-  }
-  .history-chip:hover { color: var(--text); border-color: var(--accent2); }
-
-  @media (prefers-reduced-motion: reduce) {
-    .spinner { animation-duration: 2s; }
-  }
-  @media (max-width: 480px) {
-    header { padding: 36px 16px 0; }
-    .form-card { padding: 20px 16px; }
-    .row { grid-template-columns: 1fr; gap: 10px; }
-    .card-actions { flex-direction: column; }
-    .movie-card { padding: 14px 16px; gap: 12px; }
-    .nav-pill span { display: none; }
-    .nav-pill { padding: 8px 10px; }
-  }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
@@ -335,14 +19,14 @@
 </div>
 
 <div class="nav-bar-right">
-  <button class="nav-pill" id="watchlist-nav-btn" onclick="toggleWatchlistPanel()">
+  <a href="/watchlist" class="nav-pill" id="watchlist-nav-btn">
     <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M6 2a2 2 0 00-2 2v18l8-5 8 5V4a2 2 0 00-2-2H6z"/></svg>
     <span id="watchlist-count-label">Watchlist</span>
-  </button>
-  <button class="nav-pill" id="fav-nav-btn" onclick="toggleFavoritesPanel()">
+  </a>
+  <a href="/favorites" class="nav-pill" id="fav-nav-btn">
     <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.1C.86 10.2 1.6 6.6 4.6 5.1 7 3.9 9.6 4.7 12 7.3c2.4-2.6 5-3.4 7.4-2.2 3 1.5 3.74 5.1 1.9 7.8C18.7 16.65 12 21 12 21z"/></svg>
     <span id="fav-count-label">Favorites</span>
-  </button>
+  </a>
 </div>
 
 <header>
@@ -442,22 +126,6 @@
     <p id="loading-text">Matching your mood to films…</p>
   </div>
 
-  <div class="favorites-panel" id="favorites-panel">
-    <div class="favorites-panel-header">
-      <h2>Your favorites</h2>
-      <button class="clear-btn" onclick="toggleFavoritesPanel()">Close</button>
-    </div>
-    <div id="favorites-list"></div>
-  </div>
-
-  <div class="favorites-panel" id="watchlist-panel">
-    <div class="favorites-panel-header">
-      <h2>Your watchlist</h2>
-      <button class="clear-btn" onclick="toggleWatchlistPanel()">Close</button>
-    </div>
-    <div id="watchlist-list"></div>
-  </div>
-
   <div id="results"></div>
 
   <div class="history-section" id="history-section" style="display:none">
@@ -468,6 +136,7 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="{{ url_for('static', filename='common.js') }}"></script>
 <script>
   const LOADING_MSGS = [
     'Matching your mood to films…',
@@ -477,36 +146,11 @@
   ];
 
   let historyArr = JSON.parse(localStorage.getItem('mmr_history') || '[]');
-  let favoritesArr = JSON.parse(localStorage.getItem('mmr_favorites') || '[]');
-  let watchlistArr = JSON.parse(localStorage.getItem('mmr_watchlist') || '[]');
   let ratingsObj = JSON.parse(localStorage.getItem('mmr_ratings') || '{}');
   let currentMovies = [];
   let currentMood = '';
 
   renderHistory();
-  updateFavCount();
-  updateWatchlistCount();
-  applyTheme(localStorage.getItem('mmr_theme') || 'dark');
-
-  // ---------- Theme ----------
-  function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    const icon = document.getElementById('theme-icon');
-    if (theme === 'light') {
-      // moon icon — tapping switches back to dark
-      icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
-    } else {
-      // sun icon — tapping switches to light
-      icon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
-    }
-  }
-
-  function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-    const next = current === 'light' ? 'dark' : 'light';
-    localStorage.setItem('mmr_theme', next);
-    applyTheme(next);
-  }
 
   // ---------- Voice input (Web Speech API) ----------
   const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -554,13 +198,8 @@
     recognition.start();
   }
 
-  // ---------- Favorites ----------
-  function movieKey(m) { return `${m.title}__${m.year || ''}`; }
-
-  function isFavorited(m) {
-    return favoritesArr.some(f => movieKey(f) === movieKey(m));
-  }
-
+  // ---------- Favorites (this page only saves/removes from the movie
+  // cards — browsing/removing the full list happens on /favorites) ----------
   function toggleFavorite(i) {
     const m = currentMovies[i];
     if (!m) return;
@@ -573,54 +212,10 @@
     }
     localStorage.setItem('mmr_favorites', JSON.stringify(favoritesArr));
     updateFavCount();
-    renderFavorites();
     renderResults();
   }
 
-  function removeFavorite(key) {
-    favoritesArr = favoritesArr.filter(f => movieKey(f) !== key);
-    localStorage.setItem('mmr_favorites', JSON.stringify(favoritesArr));
-    updateFavCount();
-    renderFavorites();
-    renderResults();
-  }
-
-  function updateFavCount() {
-    document.getElementById('fav-count-label').textContent =
-      favoritesArr.length ? `Favorites (${favoritesArr.length})` : 'Favorites';
-  }
-
-  function toggleFavoritesPanel() {
-    const panel = document.getElementById('favorites-panel');
-    const showing = panel.style.display === 'block';
-    panel.style.display = showing ? 'none' : 'block';
-    if (!showing) { renderFavorites(); panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-  }
-
-  function renderFavorites() {
-    const el = document.getElementById('favorites-list');
-    if (!favoritesArr.length) {
-      el.innerHTML = '<div class="fav-empty">No favorites saved yet — tap the heart on any pick to save it here.</div>';
-      return;
-    }
-    el.innerHTML = favoritesArr.map(m => `
-      <div class="fav-item">
-        <div class="fav-item-body">
-          <div class="fav-item-title">${m.title}${m.year ? ` (${m.year})` : ''}</div>
-          <div class="fav-item-meta">${m.genre || ''}${m.savedMood ? ` · saved for "${m.savedMood}"` : ''}</div>
-        </div>
-        <button class="icon-btn save-btn active" title="Remove from favorites" onclick="removeFavorite('${movieKey(m).replace(/'/g, "\\'")}')">
-          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.1C.86 10.2 1.6 6.6 4.6 5.1 7 3.9 9.6 4.7 12 7.3c2.4-2.6 5-3.4 7.4-2.2 3 1.5 3.74 5.1 1.9 7.8C18.7 16.65 12 21 12 21z"/></svg>
-        </button>
-      </div>
-    `).join('');
-  }
-
-  // ---------- Watchlist ----------
-  function isInWatchlist(m) {
-    return watchlistArr.some(w => movieKey(w) === movieKey(m));
-  }
-
+  // ---------- Watchlist (full list lives on /watchlist) ----------
   function toggleWatchlist(i) {
     const m = currentMovies[i];
     if (!m) return;
@@ -633,50 +228,10 @@
     }
     localStorage.setItem('mmr_watchlist', JSON.stringify(watchlistArr));
     updateWatchlistCount();
-    renderWatchlist();
     renderResults();
   }
 
-  function removeFromWatchlist(key) {
-    watchlistArr = watchlistArr.filter(w => movieKey(w) !== key);
-    localStorage.setItem('mmr_watchlist', JSON.stringify(watchlistArr));
-    updateWatchlistCount();
-    renderWatchlist();
-    renderResults();
-  }
-
-  function updateWatchlistCount() {
-    document.getElementById('watchlist-count-label').textContent =
-      watchlistArr.length ? `Watchlist (${watchlistArr.length})` : 'Watchlist';
-  }
-
-  function toggleWatchlistPanel() {
-    const panel = document.getElementById('watchlist-panel');
-    const showing = panel.style.display === 'block';
-    panel.style.display = showing ? 'none' : 'block';
-    if (!showing) { renderWatchlist(); panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-  }
-
-  function renderWatchlist() {
-    const el = document.getElementById('watchlist-list');
-    if (!watchlistArr.length) {
-      el.innerHTML = '<div class="fav-empty">Nothing here yet — tap the bookmark on any pick to save it for later.</div>';
-      return;
-    }
-    el.innerHTML = watchlistArr.map(m => `
-      <div class="fav-item">
-        <div class="fav-item-body">
-          <div class="fav-item-title">${m.title}${m.year ? ` (${m.year})` : ''}</div>
-          <div class="fav-item-meta">${m.genre || ''}${m.savedMood ? ` · saved for "${m.savedMood}"` : ''}</div>
-        </div>
-        <button class="icon-btn watchlist-btn active" title="Remove from watchlist" onclick="removeFromWatchlist('${movieKey(m).replace(/'/g, "\\'")}')">
-          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M6 2a2 2 0 00-2 2v18l8-5 8 5V4a2 2 0 00-2-2H6z"/></svg>
-        </button>
-      </div>
-    `).join('');
-  }
-
-  // ---------- Ratings (thumbs up/down) ----------
+  // ---------- Ratings (thumbs up/down)  ---------- ----------
   function rateMovie(i, rating) {
     const m = currentMovies[i];
     if (!m) return;
@@ -701,13 +256,6 @@
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
     event.target.classList.add('active');
     document.getElementById('mood-input').focus();
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2600);
   }
 
   function renderHistory() {

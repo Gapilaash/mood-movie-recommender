@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b0d11">
-<title>Favorites · Mood Movie Recommender</title>
+<title>Watchlist · Mood Movie Recommender</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -23,21 +23,21 @@
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg>
     <span>Home</span>
   </a>
-  <a href="/watchlist" class="nav-pill">
-    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M6 2a2 2 0 00-2 2v18l8-5 8 5V4a2 2 0 00-2-2H6z"/></svg>
-    <span>Watchlist</span>
+  <a href="/favorites" class="nav-pill">
+    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.1C.86 10.2 1.6 6.6 4.6 5.1 7 3.9 9.6 4.7 12 7.3c2.4-2.6 5-3.4 7.4-2.2 3 1.5 3.74 5.1 1.9 7.8C18.7 16.65 12 21 12 21z"/></svg>
+    <span>Favorites</span>
   </a>
 </div>
 
 <header>
-  <div class="kicker">Saved for later</div>
-  <h1>Your <em>Favorites</em></h1>
-  <p class="subtitle">Movies you've loved and saved to revisit.</p>
+  <div class="kicker">Watch it later</div>
+  <h1>Your <em>Watchlist</em></h1>
+  <p class="subtitle">Movies you've bookmarked to watch soon.</p>
   <div class="rule"></div>
 </header>
 
 <main>
-  <div class="list-card" id="favorites-list"></div>
+  <div class="list-card" id="watchlist-list"></div>
 </main>
 
 <div class="toast" id="toast"></div>

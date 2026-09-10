@@ -46,8 +46,14 @@ http://127.0.0.1:5000
 
 - `app.py` — Flask backend responsible for handling Gemini AI API calls
 - `templates/index.html` — Frontend UI comprising the mood input field, language selector, and results display
+- `templates/favorites.html` — Saved/favorited movies page
+- `templates/watchlist.html` — Watchlist page
+- `static/style.css` — Site-wide styling
+- `static/common.js` — Shared frontend logic (nav, favorites/watchlist handling, poster fallback, etc.)
 - `requirements.txt` — Required Python dependencies
 - `.env` — Stores your API key; **do not push this file to GitHub** — keep it private
+
+> Note: `index.html`, `favorites.html`, and `watchlist.html` must stay inside `templates/`, and `style.css`/`common.js` must stay inside `static/`. The pages use Flask's `{{ url_for('static', ...) }}` templating, so opening an HTML file directly in a browser (without running `python app.py`) will not load the styling.
 
 ## Free Deployment Options
 

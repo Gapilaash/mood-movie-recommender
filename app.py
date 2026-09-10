@@ -76,6 +76,16 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/favorites")
+def favorites_page():
+    return render_template("favorites.html")
+
+
+@app.route("/watchlist")
+def watchlist_page():
+    return render_template("watchlist.html")
+
+
 @app.route("/recommend", methods=["POST"])
 def recommend():
     data = request.get_json(force=True)
